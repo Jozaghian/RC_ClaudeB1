@@ -1,0 +1,30 @@
+{
+  "short_name": "Ride Club",
+  "name": "Ride Club - Canadian Ridesharing Platform",
+  "description": "Connect with drivers and passengers across Canada for safe, affordable, and eco-friendly travel.",
+  "icons": [
+    {
+      "src": "Pic/Logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "Pic/Logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "Pic/Logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#C8102E",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["travel", "transportation", "social"]
+}
