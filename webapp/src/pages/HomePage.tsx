@@ -15,18 +15,13 @@ import {
   InputLabel,
   Alert,
   Card,
-  CardContent,
-  Fab,
-  Chip,
 } from '@mui/material';
 import {
   Search as SearchIcon,
   SwapHoriz as SwapIcon,
-  DirectionsCar as CarIcon,
   Add as AddIcon,
   RequestPage as RequestIcon,
   FindInPage as FindIcon,
-  CreditCard as CreditIcon,
 } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -36,7 +31,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLoading } from '../contexts/LoadingContext';
 import apiService from '../services/apiService';
 
-// Mock Canadian cities data - in a real app this would come from the backend
+// Mock Canadian cities data
 const CANADIAN_CITIES = [
   { id: 1, name: 'Toronto', province: 'ON', type: 'city' },
   { id: 2, name: 'Vancouver', province: 'BC', type: 'city' },
@@ -50,59 +45,18 @@ const CANADIAN_CITIES = [
   { id: 10, name: 'Kitchener', province: 'ON', type: 'city' },
 ];
 
-interface City {
-  id: number;
-  name: string;
-  province: string;
-  type: string;
-}
-
-interface Ride {
-  id: string;
-  driver: {
-    firstName: string;
-    lastName: string;
-    rating: number;
-  };
-  origin: string;
-  destination: string;
-  departureDateTime: string;
-  price: number;
-  availableSeats: number;
-  duration: string;
-}
-
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { setLoading } = useLoading();
 
   // Search form state
-  const [originCity, setOriginCity] = useState<City | null>(null);
-  const [destinationCity, setDestinationCity] = useState<City | null>(null);
+  const [originCity, setOriginCity] = useState<any>(null);
+  const [destinationCity, setDestinationCity] = useState<any>(null);
   const [departureDate, setDepartureDate] = useState<Date>(new Date());
   const [passengers, setPassengers] = useState<number>(1);
-
-  // Data state
-  const [rides, setRides] = useState<Ride[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
-
-  const isDriver = user?.role === 'DRIVER';
-
-  useEffect(() => {
-    loadFeaturedRides();
-  }, []);
-
-  const loadFeaturedRides = async () => {
-    try {
-      // For demo purposes, we'll show empty rides initially
-      // In production, this would load featured/recent rides from backend
-      setRides([]);
-    } catch (error) {
-      console.error('Failed to load featured rides:', error);
-    }
-  };
 
   const handleSearchRides = async () => {
     setSearchError('');
@@ -130,31 +84,15 @@ const HomePage: React.FC = () => {
       });
 
       if (response.success) {
-        setRides(response.data.rides);
-        
-        if (response.data.rides.length === 0) {
-          // Navigate to find rides page with search parameters
-          navigate('/find-rides', {
-            state: {
-              originCity,
-              destinationCity,
-              departureDate,
-              passengers,
-              noResults: true
-            }
-          });
-        } else {
-          // Navigate to find rides page with results
-          navigate('/find-rides', {
-            state: {
-              originCity,
-              destinationCity,
-              departureDate,
-              passengers,
-              rides: response.data.rides
-            }
-          });
-        }
+        navigate('/find-rides', {
+          state: {
+            originCity,
+            destinationCity,
+            departureDate,
+            passengers,
+            rides: response.data.rides || []
+          }
+        });
       }
     } catch (error: any) {
       console.error('Search rides error:', error);
@@ -171,476 +109,320 @@ const HomePage: React.FC = () => {
     setDestinationCity(temp);
   };
 
-  const getQuickActions = () => {
-    if (isDriver) {
-      return [
-        {
-          title: 'Post New Ride',
-          icon: <AddIcon />,
-          action: () => navigate('/create-ride'),
-          variant: 'primary' as const,
-          description: 'Create a new ride listing'
-        },
-        {
-          title: 'Browse Requests',
-          icon: <FindIcon />,
-          action: () => navigate('/browse-requests'),
-          variant: 'secondary' as const,
-          description: 'Find passenger requests'
-        },
-        {
-          title: 'My Rides',
-          icon: <CarIcon />,
-          action: () => navigate('/my-rides'),
-          variant: 'outlined' as const,
-          description: 'Manage your ride listings'
-        },
-        {
-          title: 'Manage Credits',
-          icon: <CreditIcon />,
-          action: () => navigate('/credits'),
-          variant: 'outlined' as const,
-          description: 'View credit balance'
-        }
-      ];
-    } else {
-      return [
-        {
-          title: 'Request a Ride',
-          icon: <RequestIcon />,
-          action: () => navigate('/request-ride'),
-          variant: 'primary' as const,
-          description: 'Post a ride request'
-        },
-        {
-          title: 'My Requests',
-          icon: <FindIcon />,
-          action: () => navigate('/my-rides'),
-          variant: 'secondary' as const,
-          description: 'View your ride requests'
-        },
-        {
-          title: 'Browse Rides',
-          icon: <SearchIcon />,
-          action: () => navigate('/find-rides'),
-          variant: 'outlined' as const,
-          description: 'Find available rides'
-        }
-      ];
-    }
-  };
-
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      {/* Hero Section */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #2563EB 0%, #10B981 100%)',
-          color: 'white',
-          py: { xs: 6, md: 8 },
-          position: 'relative',
-          overflow: 'hidden',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(255, 255, 255, 0.1)',
-            zIndex: 0,
-          },
-        }}
-      >
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
-            <Typography
-              variant="h1"
-              component="h1"
+      {/* Single Page Landing */}
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+        
+        {/* Hero Section with Search */}
+        <Box
+          sx={{
+            background: 'linear-gradient(135deg, #2563EB 0%, #10B981 100%)',
+            color: 'white',
+            py: { xs: 6, md: 8 },
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+            <Box sx={{ textAlign: 'center', mb: 6 }}>
+              <Typography
+                variant="h1"
+                component="h1"
+                sx={{
+                  fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
+                  fontWeight: 800,
+                  mb: 2,
+                  background: 'linear-gradient(45deg, rgba(255,255,255,0.95) 30%, rgba(255,255,255,0.8) 90%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Find Your Perfect Ride
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontSize: { xs: '1.1rem', md: '1.3rem' },
+                  mb: 4,
+                  opacity: 0.95,
+                  maxWidth: 600,
+                  mx: 'auto',
+                  fontWeight: 400,
+                }}
+              >
+                Search for rides across Canada with just a few clicks
+              </Typography>
+            </Box>
+
+            {/* Search Form */}
+            <Paper
+              elevation={4}
               sx={{
-                fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
-                fontWeight: 800,
-                mb: 2,
-                background: 'linear-gradient(45deg, rgba(255,255,255,0.95) 30%, rgba(255,255,255,0.8) 90%)',
+                p: { xs: 3, md: 4 },
+                borderRadius: 3,
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(20px)',
+                maxWidth: 800,
+                mx: 'auto',
+              }}
+            >
+              {searchError && (
+                <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                  {searchError}
+                </Alert>
+              )}
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {/* From - Swap - To */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  gap: 2, 
+                  alignItems: 'center',
+                  flexDirection: { xs: 'column', md: 'row' }
+                }}>
+                  <Box sx={{ flex: 1, width: { xs: '100%', md: 'auto' } }}>
+                    <Autocomplete
+                      options={CANADIAN_CITIES}
+                      getOptionLabel={(option) => `${option.name}, ${option.province}`}
+                      value={originCity}
+                      onChange={(event, newValue) => setOriginCity(newValue)}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="From"
+                          placeholder="Select origin city"
+                          fullWidth
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                  </Box>
+
+                  <IconButton
+                    onClick={handleSwapCities}
+                    disabled={!originCity || !destinationCity}
+                    sx={{
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                      width: 48,
+                      height: 48,
+                      '&:hover': { bgcolor: 'primary.dark' },
+                      '&:disabled': { bgcolor: 'grey.300' },
+                    }}
+                  >
+                    <SwapIcon />
+                  </IconButton>
+
+                  <Box sx={{ flex: 1, width: { xs: '100%', md: 'auto' } }}>
+                    <Autocomplete
+                      options={CANADIAN_CITIES}
+                      getOptionLabel={(option) => `${option.name}, ${option.province}`}
+                      value={destinationCity}
+                      onChange={(event, newValue) => setDestinationCity(newValue)}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="To"
+                          placeholder="Select destination city"
+                          fullWidth
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                  </Box>
+                </Box>
+
+                {/* Date - Passengers */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  gap: 2,
+                  flexDirection: { xs: 'column', sm: 'row' }
+                }}>
+                  <Box sx={{ flex: 1 }}>
+                    <DatePicker
+                      label="Departure Date"
+                      value={departureDate}
+                      onChange={(newValue) => newValue && setDepartureDate(newValue)}
+                      minDate={new Date()}
+                      slotProps={{
+                        textField: { fullWidth: true, variant: 'outlined' },
+                      }}
+                    />
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <FormControl fullWidth variant="outlined">
+                      <InputLabel>Passengers</InputLabel>
+                      <Select
+                        value={passengers}
+                        label="Passengers"
+                        onChange={(e) => setPassengers(e.target.value as number)}
+                      >
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                          <MenuItem key={num} value={num}>
+                            {num} {num === 1 ? 'passenger' : 'passengers'}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </Box>
+
+                {/* Search Button */}
+                <Button
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  onClick={handleSearchRides}
+                  disabled={isSearching}
+                  startIcon={<SearchIcon />}
+                  sx={{
+                    py: 2,
+                    fontSize: '1.1rem',
+                    fontWeight: 700,
+                    background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
+                    },
+                  }}
+                >
+                  {isSearching ? 'Searching...' : '🔍 Search Rides'}
+                </Button>
+              </Box>
+            </Paper>
+          </Container>
+        </Box>
+
+        {/* Mission Statement Section */}
+        <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+              border: '1px solid #e2e8f0',
+              borderRadius: 3,
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 700,
+                mb: 3,
+                background: 'linear-gradient(135deg, #2563EB 0%, #10B981 100%)',
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
               }}
             >
-              Welcome to Ride Club
+              🇨🇦 Canada's Premier Ridesharing Platform
             </Typography>
             <Typography
-              variant="h5"
+              variant="h6"
               sx={{
-                fontSize: { xs: '1.2rem', md: '1.5rem' },
-                mb: 3,
-                opacity: 0.95,
-                maxWidth: 700,
+                color: 'text.secondary',
+                maxWidth: 800,
                 mx: 'auto',
-                fontWeight: 400,
                 lineHeight: 1.6,
+                fontSize: { xs: '1.1rem', md: '1.3rem' },
               }}
             >
-              Canada's premier ridesharing platform connecting drivers and passengers 
-              for safe, affordable, and eco-friendly travel across the country
+              Connecting drivers and passengers for safe, affordable, and eco-friendly travel across the country. 
+              Join thousands of Canadians who choose sustainable transportation.
             </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-              <Chip
-                label={`Welcome back, ${user?.firstName}! 👋`}
-                sx={{
-                  bgcolor: 'rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                  fontWeight: 600,
-                  px: 2,
-                  py: 1,
-                  fontSize: '1rem',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                }}
-              />
-            </Box>
-          </Box>
-
-          {/* Hero Action Buttons */}
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              gap: 3, 
-              justifyContent: 'center', 
-              flexWrap: 'wrap',
-              mb: 2,
-            }}
-          >
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={<RequestIcon />}
-              onClick={() => navigate('/request-ride')}
-              sx={{
-                bgcolor: 'rgba(255, 255, 255, 0.15)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                color: 'white',
-                px: 4,
-                py: 2,
-                fontSize: '1.1rem',
-                fontWeight: 600,
-                minWidth: { xs: '280px', sm: 'auto' },
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.25)',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-            >
-              Request a Ride
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              startIcon={<AddIcon />}
-              onClick={() => navigate('/create-ride')}
-              sx={{
-                borderColor: 'rgba(255, 255, 255, 0.5)',
-                color: 'white',
-                px: 4,
-                py: 2,
-                fontSize: '1.1rem',
-                fontWeight: 600,
-                minWidth: { xs: '280px', sm: 'auto' },
-                borderWidth: '2px',
-                '&:hover': {
-                  borderColor: 'white',
-                  bgcolor: 'rgba(255, 255, 255, 0.1)',
-                  borderWidth: '2px',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-            >
-              Offer a Ride
-            </Button>
-          </Box>
+          </Paper>
         </Container>
-      </Box>
 
-      {/* Main Content */}
-      <Box sx={{ py: { xs: 4, md: 6 }, bgcolor: 'background.default' }}>
-        <Container maxWidth="lg">
-
+        {/* Featured Rides Section - Compact */}
+        <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 } }}>
           <Grid container spacing={4}>
-            {/* Search Section */}
-            <Grid item xs={12}>
+            <Grid item xs={12} md={8}>
               <Card
-                elevation={0}
+                elevation={1}
                 sx={{
-                  p: { xs: 4, md: 5 },
-                  background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                  p: 3,
                   border: '1px solid #e2e8f0',
                 }}
               >
-                <Box sx={{ textAlign: 'center', mb: 4 }}>
-                  <Typography 
-                    variant="h4" 
-                    sx={{ 
-                      fontWeight: 700,
-                      color: 'text.primary',
-                      mb: 1,
-                      background: 'linear-gradient(135deg, #2563EB 0%, #10B981 100%)',
-                      backgroundClip: 'text',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                    }}
-                  >
-                    🔍 Find Your Perfect Ride
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    Search for rides across Canada with just a few clicks
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    🚗 Featured Rides
                   </Typography>
                 </Box>
 
-                {searchError && (
-                  <Alert 
-                    severity="error" 
-                    sx={{ 
-                      mb: 3,
-                      borderRadius: 2,
-                      '& .MuiAlert-icon': {
-                        fontSize: '1.5rem',
-                      },
-                    }}
-                  >
-                    {searchError}
-                  </Alert>
-                )}
-
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  {/* Row 1: From - Swap - To */}
-                  <Box sx={{ 
-                    display: 'flex', 
-                    gap: 2, 
-                    alignItems: 'center',
-                    flexDirection: { xs: 'column', md: 'row' }
-                  }}>
-                    <Box sx={{ flex: 1, width: { xs: '100%', md: 'auto' } }}>
-                      <Autocomplete
-                        options={CANADIAN_CITIES}
-                        getOptionLabel={(option) => `${option.name}, ${option.province}`}
-                        value={originCity}
-                        onChange={(event, newValue) => setOriginCity(newValue)}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="From"
-                            placeholder="Select origin city"
-                            fullWidth
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    </Box>
-
-                    <IconButton
-                      onClick={handleSwapCities}
-                      disabled={!originCity || !destinationCity}
-                      sx={{
-                        bgcolor: 'primary.main',
-                        color: 'white',
-                        width: 56,
-                        height: 56,
-                        border: '3px solid white',
-                        boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
-                        '&:hover': { 
-                          bgcolor: 'primary.dark',
-                          transform: 'scale(1.05)',
-                        },
-                        '&:disabled': { 
-                          bgcolor: 'grey.300',
-                          transform: 'none',
-                          boxShadow: 'none',
-                        },
-                        transition: 'all 0.2s ease-in-out',
-                      }}
-                    >
-                      <SwapIcon sx={{ fontSize: '1.5rem' }} />
-                    </IconButton>
-
-                    <Box sx={{ flex: 1, width: { xs: '100%', md: 'auto' } }}>
-                      <Autocomplete
-                        options={CANADIAN_CITIES}
-                        getOptionLabel={(option) => `${option.name}, ${option.province}`}
-                        value={destinationCity}
-                        onChange={(event, newValue) => setDestinationCity(newValue)}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="To"
-                            placeholder="Select destination city"
-                            fullWidth
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    </Box>
-                  </Box>
-
-                  {/* Row 2: Date - Passengers */}
-                  <Box sx={{ 
-                    display: 'flex', 
-                    gap: 3,
-                    flexDirection: { xs: 'column', sm: 'row' }
-                  }}>
-                    <Box sx={{ flex: 1 }}>
-                      <DatePicker
-                        label="Departure Date"
-                        value={departureDate}
-                        onChange={(newValue) => newValue && setDepartureDate(newValue)}
-                        minDate={new Date()}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            variant: 'outlined',
-                          },
-                        }}
-                      />
-                    </Box>
-
-                    <Box sx={{ flex: 1 }}>
-                      <FormControl fullWidth variant="outlined">
-                        <InputLabel>Passengers</InputLabel>
-                        <Select
-                          value={passengers}
-                          label="Passengers"
-                          onChange={(e) => setPassengers(e.target.value as number)}
-                        >
-                          {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                            <MenuItem key={num} value={num}>
-                              {num} {num === 1 ? 'passenger' : 'passengers'}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Box>
-
-                  {/* Search Button */}
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                  No rides available at the moment
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  Use the search above to find rides, or try these quick actions:
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                   <Button
-                    fullWidth
                     variant="contained"
-                    size="large"
-                    onClick={handleSearchRides}
-                    disabled={isSearching}
-                    startIcon={<SearchIcon />}
+                    size="medium"
+                    startIcon={<AddIcon />}
+                    onClick={() => navigate('/create-ride')}
                     sx={{
-                      py: 2.5,
-                      fontSize: { xs: '1.1rem', md: '1.3rem' },
-                      fontWeight: 700,
-                      background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                      boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
+                      background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                       '&:hover': {
-                        background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
-                        boxShadow: '0 12px 35px rgba(37, 99, 235, 0.4)',
-                        transform: 'translateY(-2px)',
-                      },
-                      '&:disabled': {
-                        background: 'linear-gradient(135deg, #94A3B8 0%, #64748B 100%)',
-                        transform: 'none',
+                        background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
                       },
                     }}
                   >
-                    {isSearching ? 'Searching for rides...' : 'Search Rides'}
+                    + Offer a Ride
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="medium"
+                    startIcon={<RequestIcon />}
+                    onClick={() => navigate('/request-ride')}
+                  >
+                    Request a Ride
+                  </Button>
+                  <Button
+                    variant="text"
+                    size="medium"
+                    startIcon={<FindIcon />}
+                    onClick={() => navigate('/find-rides')}
+                  >
+                    Browse All Rides
                   </Button>
                 </Box>
               </Card>
             </Grid>
 
-            {/* Featured Rides Section */}
-            <Grid item xs={12}>
-              <Paper
-                elevation={3}
+            {/* Quick Stats - Side Panel */}
+            <Grid item xs={12} md={4}>
+              <Card
+                elevation={1}
                 sx={{
-                  p: { xs: 3, md: 4 },
-                  borderRadius: 3,
-                  background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                  p: 3,
+                  background: 'linear-gradient(135deg, #2563EB 0%, #10B981 100%)',
+                  color: 'white',
                 }}
               >
-                <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
-                  🚗 Featured Rides
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                  🚀 Why Choose Ride Club?
                 </Typography>
-
-                {rides.length === 0 ? (
-                  <Box sx={{ textAlign: 'center', py: 6 }}>
-                    <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-                      No rides available at the moment
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                      Use the search above to find rides, or try these quick actions:
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-                      {isDriver ? (
-                        <Button
-                          variant="contained"
-                          startIcon={<AddIcon />}
-                          onClick={() => navigate('/create-ride')}
-                        >
-                          Post a Ride
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="contained"
-                          startIcon={<RequestIcon />}
-                          onClick={() => navigate('/request-ride')}
-                        >
-                          Request a Ride
-                        </Button>
-                      )}
-                      <Button
-                        variant="outlined"
-                        startIcon={<SearchIcon />}
-                        onClick={() => navigate('/find-rides')}
-                      >
-                        Browse All Rides
-                      </Button>
-                    </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 800 }}>🌍</Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>Eco-friendly travel</Typography>
                   </Box>
-                ) : (
-                  <Grid container spacing={3}>
-                    {rides.map((ride) => (
-                      <Grid item xs={12} md={6} key={ride.id}>
-                        {/* Ride cards would be rendered here */}
-                        <Card sx={{ cursor: 'pointer' }}>
-                          <CardContent>
-                            <Typography variant="h6">
-                              {ride.origin} → {ride.destination}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {new Date(ride.departureDateTime).toLocaleDateString()}
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
-                )}
-              </Paper>
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 800 }}>💰</Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>Save money on trips</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 800 }}>🛡️</Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>Verified safe drivers</Typography>
+                  </Box>
+                </Box>
+              </Card>
             </Grid>
           </Grid>
-
-          {/* Floating Action Button for Mobile */}
-          {isDriver && (
-            <Fab
-              color="primary"
-              aria-label="add ride"
-              sx={{
-                position: 'fixed',
-                bottom: 24,
-                right: 24,
-                display: { xs: 'flex', md: 'none' },
-              }}
-              onClick={() => navigate('/create-ride')}
-            >
-              <AddIcon />
-            </Fab>
-          )}
         </Container>
       </Box>
     </LocalizationProvider>
