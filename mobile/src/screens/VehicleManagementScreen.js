@@ -19,9 +19,10 @@ import { capitalizeWords } from '../utils/helpers';
 import apiService from '../services/apiService';
 
 const VEHICLE_COLORS = [
-  'White', 'Black', 'Silver', 'Gray', 
-  'Red', 'Blue', 'Green', 'Yellow', 
-  'Orange', 'Brown', 'Beige', 'Purple'
+  'White', 'Black', 'Silver', 'Gray',
+  'Red', 'Blue', 'Green', 'Yellow',
+  'Orange', 'Brown', 'Beige', 'Purple',
+  'Other'
 ];
 
 // Popular car makes and models for autocomplete
@@ -100,6 +101,7 @@ export default function VehicleManagementScreen({ route, navigation }) {
   const [modelSuggestions, setModelSuggestions] = useState([]);
   const [showMakeSuggestions, setShowMakeSuggestions] = useState(false);
   const [showModelSuggestions, setShowModelSuggestions] = useState(false);
+  const [customColor, setCustomColor] = useState('');
 
   const { user } = useAuth();
   const { setLoading: setGlobalLoading } = useLoading();
@@ -151,6 +153,8 @@ export default function VehicleManagementScreen({ route, navigation }) {
     setModelSuggestions([]);
     setShowMakeSuggestions(false);
     setShowModelSuggestions(false);
+    // Reset custom color
+    setCustomColor('');
   };
 
   // Autocomplete functions
@@ -214,16 +218,27 @@ export default function VehicleManagementScreen({ route, navigation }) {
   };
 
   const handleEditVehicle = (vehicle) => {
+    // Check if color is a standard color or custom
+    const isStandardColor = VEHICLE_COLORS.includes(vehicle.color);
+
     setVehicleForm({
       make: vehicle.make,
       model: vehicle.model,
       year: vehicle.year.toString(),
-      color: vehicle.color,
+      color: isStandardColor ? vehicle.color : 'Other',
       licensePlate: vehicle.licensePlate,
       seatingCapacity: vehicle.seatingCapacity,
       features: vehicle.features || [],
       description: vehicle.description || '',
     });
+
+    // Set custom color if it's not a standard color
+    if (!isStandardColor) {
+      setCustomColor(vehicle.color);
+    } else {
+      setCustomColor('');
+    }
+
     setEditingVehicle(vehicle);
     setIsAddingVehicle(true);
   };
@@ -279,6 +294,11 @@ export default function VehicleManagementScreen({ route, navigation }) {
       return false;
     }
 
+    if (vehicleForm.color === 'Other' && !customColor.trim()) {
+      Alert.alert('Validation Error', 'Please enter a custom color');
+      return false;
+    }
+
     if (!vehicleForm.licensePlate.trim()) {
       Alert.alert('Validation Error', 'Please enter the license plate');
       return false;
@@ -304,6 +324,7 @@ export default function VehicleManagementScreen({ route, navigation }) {
         make: capitalizeWords(vehicleForm.make.trim()),
         model: capitalizeWords(vehicleForm.model.trim()),
         licensePlate: vehicleForm.licensePlate.trim().toUpperCase(),
+        color: vehicleForm.color === 'Other' ? capitalizeWords(customColor.trim()) : vehicleForm.color,
       };
 
       let response;
@@ -349,7 +370,23 @@ export default function VehicleManagementScreen({ route, navigation }) {
       }
     } catch (error) {
       console.error('Save vehicle error:', error);
-      Alert.alert('Error', error.response?.data?.message || 'Failed to save vehicle.');
+
+      // Better error handling based on error type
+      if (error.response?.status === 401) {
+        Alert.alert('Authentication Error', 'Please login again to save your vehicle.');
+      } else if (error.response?.status === 400) {
+        const message = error.response?.data?.message || 'Invalid vehicle information. Please check your entries.';
+        Alert.alert('Validation Error', message);
+      } else if (error.response?.status === 409) {
+        Alert.alert('Duplicate Vehicle', 'A vehicle with this license plate already exists.');
+      } else if (error.response?.status >= 500) {
+        Alert.alert('Server Error', 'Our servers are temporarily unavailable. Please try again later.');
+      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+        Alert.alert('Connection Error', 'Please check your internet connection and try again.');
+      } else {
+        const message = error.response?.data?.message || 'Unable to save vehicle right now. Please try again.';
+        Alert.alert('Error', message);
+      }
     } finally {
       setGlobalLoading(false);
     }
@@ -437,7 +474,12 @@ export default function VehicleManagementScreen({ route, navigation }) {
         styles.colorOption,
         vehicleForm.color === color && styles.colorOptionSelected
       ]}
-      onPress={() => setVehicleForm({ ...vehicleForm, color })}
+      onPress={() => {
+        setVehicleForm({ ...vehicleForm, color });
+        if (color !== 'Other') {
+          setCustomColor('');
+        }
+      }}
     >
       <Text style={[
         styles.colorOptionText,
@@ -574,6 +616,16 @@ export default function VehicleManagementScreen({ route, navigation }) {
               <View style={styles.colorGrid}>
                 {VEHICLE_COLORS.map(renderColorOption)}
               </View>
+              {vehicleForm.color === 'Other' && (
+                <TextInput
+                  style={[styles.input, { marginTop: spacing.sm }]}
+                  placeholder="Enter custom color"
+                  value={customColor}
+                  onChangeText={setCustomColor}
+                  placeholderTextColor={colors.textLight}
+                  maxLength={20}
+                />
+              )}
             </View>
 
             <View style={styles.inputContainer}>

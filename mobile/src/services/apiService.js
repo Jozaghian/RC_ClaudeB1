@@ -3,7 +3,7 @@ import axios from 'axios';
 // Base API configuration
 const API_BASE_URL = __DEV__ 
   ? 'http://localhost:3001/api'  // Development - Use localhost  
-  : 'https://api.rideclub.ca/api'; // Production
+  : 'https://rideclubnet.com/api'; // Production
 
 class ApiService {
   constructor() {

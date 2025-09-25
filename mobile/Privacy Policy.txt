@@ -1,0 +1,59 @@
+Privacy Policy
+Last Updated: December 5, 2024
+Version: 1.1
+Ride Club Inc. (“Ride Club,” “we,” “our,” or “the Service”) respects your privacy and is committed to protecting your personal information. This Privacy Policy explains what information we collect, how we use it, and your rights regarding your data.
+________________________________________
+1. Information We Collect
+•	Registration Data: When you create an account, we collect basic details such as your name, email address, and phone number.
+•	Cookies & Usage Data: We use cookies to make login easier and to improve your experience. Some features may not work properly if cookies are disabled.
+•	Log Data: We collect IP addresses and technical information to analyze trends, improve the Service, and ensure security.
+•	Identity Verification: We may ask for ID documents during registration to verify identity. These images are deleted once verification is complete.
+________________________________________
+2. How We Use Information
+•	To verify accounts and provide access to the Service.
+•	To communicate with Members about their account or service updates.
+•	To improve safety, prevent fraud, and comply with legal obligations.
+•	To improve user experience through analytics and service optimization.
+________________________________________
+3. Data Sharing and Legal Compliance
+We do not sell personal information. We may share data only when required:
+•	With government or law enforcement, if required by law.
+•	To prevent fraud, protect safety, or enforce our Terms of Service.
+•	With trusted service providers (e.g., payment processors, hosting, email providers) who are bound by confidentiality and security obligations.
+________________________________________
+4. Data Retention
+•	We keep information while your account is active.
+•	When you delete your account, your data will be removed from our systems within 90 days, except where law requires longer retention.
+________________________________________
+5. Your Rights
+•	You may request to access, correct, or delete your data at any time.
+•	You can cancel your account via Account Settings > Close Account or by contacting us.
+•	You may opt out of marketing emails by using the unsubscribe link provided in those messages.
+________________________________________
+6. Children’s Privacy
+Ride Club is not intended for individuals under 18 years of age. We do not knowingly collect information from minors. If we become aware that a minor has registered, their account will be deleted.
+________________________________________
+7. App Permissions and Disclosures
+•	Android: We may collect your phone number and limited device information. Phone numbers are shared only between Members who have accepted a trip together. Installed application information is not shared with third parties.
+•	iOS: We comply with Apple’s App Privacy requirements and do not track users across third-party apps or websites.
+________________________________________
+8. Security
+We take reasonable measures to protect data, including encryption and access controls. However, no method of storage or transmission is completely secure. Members use Ride Club at their own risk.
+________________________________________
+9. International Data Transfers
+If data is stored outside Canada (e.g., on U.S.-based servers), we ensure safeguards are in place to comply with Canadian privacy law (PIPEDA).
+________________________________________
+10. Governing Law
+This Privacy Policy is governed by the laws of Canada and the Province of Ontario, without regard to conflict of law provisions.
+________________________________________
+11. Changes to This Policy
+We may update this Privacy Policy from time to time. When we make significant changes, we will notify Members by email and post the updated version here.
+________________________________________
+12. Contact Us
+For questions, requests, or complaints regarding privacy, contact us at:
+📧 privacy@rideclub.com
+📍 Ride Club Inc., [Insert Mailing Address]
+________________________________________
+⚡ Now you’ve got a polished, standalone Privacy Policy ✅
+Do you want me to also prepare a 1-paragraph “short summary” version (for App Store / Play Store listings) so users see the key points before downloading?
+

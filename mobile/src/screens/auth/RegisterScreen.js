@@ -146,10 +146,28 @@ export default function RegisterScreen({ route, navigation }) {
       }
     } catch (error) {
       console.error('Registration error:', error);
-      Alert.alert(
-        'Registration Failed',
-        error.message || 'Failed to create account. Please try again.'
-      );
+
+      // Better error handling based on error type
+      let title = 'Registration Failed';
+      let message = 'Failed to create account. Please try again.';
+
+      if (error.response?.status === 400) {
+        title = 'Invalid Information';
+        message = error.response?.data?.message || 'Please check your information and try again.';
+      } else if (error.response?.status === 409) {
+        title = 'Account Exists';
+        message = 'An account with this email or phone number already exists. Try logging in instead.';
+      } else if (error.response?.status >= 500) {
+        title = 'Server Error';
+        message = 'Our servers are temporarily unavailable. Please try again later.';
+      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+        title = 'Connection Error';
+        message = 'Please check your internet connection and try again.';
+      } else if (error.message) {
+        message = error.message;
+      }
+
+      Alert.alert(title, message);
     } finally {
       setLoading(false);
       setGlobalLoading(false);

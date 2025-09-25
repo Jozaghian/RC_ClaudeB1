@@ -113,16 +113,16 @@ export default function HomeScreen({ navigation }) {
       });
 
       if (response.success) {
-        setRides(response.data.rides);
-        
-        if (response.data.rides.length === 0) {
+        setRides(response.data.rides || []);
+
+        if (!response.data.rides || response.data.rides.length === 0) {
           Alert.alert(
             'No Rides Found',
-            'No rides match your search criteria. Try adjusting your dates or route.',
+            'No rides are currently available for this route. Be the first to request a ride!',
             [
               { text: 'OK' },
-              { 
-                text: 'Request a Ride', 
+              {
+                text: 'Request a Ride',
                 onPress: () => navigation.navigate('RideRequest', {
                   originCity,
                   destinationCity,
@@ -133,10 +133,55 @@ export default function HomeScreen({ navigation }) {
             ]
           );
         }
+      } else {
+        // API returned success: false
+        setRides([]);
+        Alert.alert(
+          'No Rides Available',
+          'No rides are currently available for this route. Would you like to request one?',
+          [
+            { text: 'Cancel' },
+            {
+              text: 'Request a Ride',
+              onPress: () => navigation.navigate('RideRequest', {
+                originCity,
+                destinationCity,
+                departureDate,
+                passengers
+              })
+            }
+          ]
+        );
       }
     } catch (error) {
       console.error('Search rides error:', error);
-      Alert.alert('Search Error', 'Failed to search rides. Please try again.');
+      setRides([]);
+
+      // Better error handling based on error type
+      if (error.response?.status === 404) {
+        Alert.alert(
+          'No Rides Found',
+          'No rides are available for this route yet. Be the first to create a ride request!',
+          [
+            { text: 'OK' },
+            {
+              text: 'Request a Ride',
+              onPress: () => navigation.navigate('RideRequest', {
+                originCity,
+                destinationCity,
+                departureDate,
+                passengers
+              })
+            }
+          ]
+        );
+      } else if (error.response?.status >= 500) {
+        Alert.alert('Server Error', 'Our servers are temporarily unavailable. Please try again later.');
+      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+        Alert.alert('Connection Error', 'Please check your internet connection and try again.');
+      } else {
+        Alert.alert('Search Error', 'Unable to search for rides right now. Please try again.');
+      }
     } finally {
       setGlobalLoading(false);
       setLoading(false);
@@ -176,21 +221,23 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.welcomeText}>
               Find your ride... 🚗
             </Text>
-            <TouchableOpacity 
-              style={styles.logoutButton}
-              onPress={() => {
-                Alert.alert(
-                  'Logout',
-                  'Are you sure you want to logout?',
-                  [
-                    { text: 'Cancel' },
-                    { text: 'Logout', onPress: logout }
-                  ]
-                );
-              }}
-            >
-              <Text style={styles.logoutText}>Logout</Text>
-            </TouchableOpacity>
+            {user && (
+              <TouchableOpacity
+                style={styles.logoutButton}
+                onPress={() => {
+                  Alert.alert(
+                    'Logout',
+                    'Are you sure you want to logout?',
+                    [
+                      { text: 'Cancel' },
+                      { text: 'Logout', onPress: logout }
+                    ]
+                  );
+                }}
+              >
+                <Text style={styles.logoutText}>Logout</Text>
+              </TouchableOpacity>
+            )}
           </View>
           <Text style={styles.headerSubtitle}>
             {user && isDriver() ? 'Manage your rides or find new passengers' : 'Search available rides across Canada'}
@@ -332,14 +379,32 @@ export default function HomeScreen({ navigation }) {
                 </View>
               </View>
 
-              {/* Search Button */}
-              <CustomButton
-                title="Search Rides"
-                variant="driver"
-                onPress={handleSearchRides}
-                fullWidth
-                style={styles.searchButton}
-              />
+              {/* Search Buttons */}
+              <View style={styles.searchButtonsContainer}>
+                <CustomButton
+                  title="Search Rides"
+                  variant="driver"
+                  onPress={handleSearchRides}
+                  style={[styles.searchButton, styles.searchButtonMain]}
+                />
+                <CustomButton
+                  title="Clear"
+                  variant="secondary"
+                  onPress={() => {
+                    setOriginCity(null);
+                    setDestinationCity(null);
+                    setOriginText('');
+                    setDestinationText('');
+                    setDepartureDate(new Date());
+                    setPassengers(1);
+                    setRides([]);
+                    setSearchQuery('');
+                    setCities([]);
+                    setSearchMode(null);
+                  }}
+                  style={[styles.searchButton, styles.clearButton]}
+                />
+              </View>
 
               {/* Date Picker */}
               {showDatePicker && (
@@ -638,9 +703,19 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.medium,
     color: colors.text,
   },
-  searchButton: {
+  searchButtonsContainer: {
+    flexDirection: 'row',
     marginTop: spacing.sm,
+    gap: spacing.sm,
+  },
+  searchButton: {
     minHeight: 58,
+  },
+  searchButtonMain: {
+    flex: 2,
+  },
+  clearButton: {
+    flex: 1,
   },
   searchButtonText: {
     color: '#FFFFFF',
@@ -664,8 +739,10 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: spacing.xl,
+    justifyContent: 'center',
+    paddingVertical: spacing.xxxl,
     paddingHorizontal: spacing.md,
+    minHeight: 200,
   },
   emptyStateIcon: {
     fontSize: 48,

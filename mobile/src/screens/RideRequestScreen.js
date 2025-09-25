@@ -33,7 +33,11 @@ export default function RideRequestScreen({ route, navigation }) {
     passengerCount: passengers || 1,
     maxBudget: '',
     minBudget: '',
-    needsLargeLuggage: false,
+    luggage: {
+      small: 0,
+      medium: 0,
+      large: 0
+    },
     needsChildSeat: false,
     needsWheelchairAccess: false,
     specialRequirements: '',
@@ -160,6 +164,26 @@ export default function RideRequestScreen({ route, navigation }) {
 
   const handleCreateRequest = async () => {
     if (!validateForm()) return;
+
+    // Check if user is logged in
+    if (!user) {
+      Alert.alert(
+        'Login Required',
+        'You need to login to create a ride request. Would you like to login or create an account?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Login',
+            onPress: () => navigation.navigate('Login')
+          },
+          {
+            text: 'Sign Up',
+            onPress: () => navigation.navigate('Register')
+          }
+        ]
+      );
+      return;
+    }
 
     setLoading(true);
     setGlobalLoading(true);
@@ -513,17 +537,96 @@ export default function RideRequestScreen({ route, navigation }) {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>🎒 Special Requirements</Text>
             
-            <View style={styles.requirementItem}>
-              <View style={styles.requirementInfo}>
-                <Text style={styles.requirementTitle}>Large Luggage</Text>
-                <Text style={styles.requirementSubtitle}>Suitcases, sports equipment, etc.</Text>
+            <View style={styles.luggageSection}>
+              <Text style={styles.requirementTitle}>Luggage</Text>
+              <Text style={styles.requirementSubtitle}>Specify quantity for each size</Text>
+
+              {/* Small Luggage */}
+              <View style={styles.luggageItem}>
+                <View style={styles.luggageInfo}>
+                  <Text style={styles.luggageLabel}>Small</Text>
+                  <Text style={styles.luggageDescription}>Backpack, small bags</Text>
+                </View>
+                <View style={styles.quantitySelector}>
+                  <TouchableOpacity
+                    style={styles.quantityButton}
+                    onPress={() => setFormData(prev => ({
+                      ...prev,
+                      luggage: { ...prev.luggage, small: Math.max(0, prev.luggage.small - 1) }
+                    }))}
+                  >
+                    <Text style={styles.quantityButtonText}>−</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.quantityText}>{formData.luggage.small}</Text>
+                  <TouchableOpacity
+                    style={styles.quantityButton}
+                    onPress={() => setFormData(prev => ({
+                      ...prev,
+                      luggage: { ...prev.luggage, small: Math.min(10, prev.luggage.small + 1) }
+                    }))}
+                  >
+                    <Text style={styles.quantityButtonText}>+</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <Switch
-                value={formData.needsLargeLuggage}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, needsLargeLuggage: value }))}
-                trackColor={{ false: colors.gray400, true: colors.primary + '40' }}
-                thumbColor={formData.needsLargeLuggage ? colors.primary : colors.gray300}
-              />
+
+              {/* Medium Luggage */}
+              <View style={styles.luggageItem}>
+                <View style={styles.luggageInfo}>
+                  <Text style={styles.luggageLabel}>Medium</Text>
+                  <Text style={styles.luggageDescription}>Carry-on, duffle bags</Text>
+                </View>
+                <View style={styles.quantitySelector}>
+                  <TouchableOpacity
+                    style={styles.quantityButton}
+                    onPress={() => setFormData(prev => ({
+                      ...prev,
+                      luggage: { ...prev.luggage, medium: Math.max(0, prev.luggage.medium - 1) }
+                    }))}
+                  >
+                    <Text style={styles.quantityButtonText}>−</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.quantityText}>{formData.luggage.medium}</Text>
+                  <TouchableOpacity
+                    style={styles.quantityButton}
+                    onPress={() => setFormData(prev => ({
+                      ...prev,
+                      luggage: { ...prev.luggage, medium: Math.min(10, prev.luggage.medium + 1) }
+                    }))}
+                  >
+                    <Text style={styles.quantityButtonText}>+</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Large Luggage */}
+              <View style={styles.luggageItem}>
+                <View style={styles.luggageInfo}>
+                  <Text style={styles.luggageLabel}>Large</Text>
+                  <Text style={styles.luggageDescription}>Suitcases, sports equipment</Text>
+                </View>
+                <View style={styles.quantitySelector}>
+                  <TouchableOpacity
+                    style={styles.quantityButton}
+                    onPress={() => setFormData(prev => ({
+                      ...prev,
+                      luggage: { ...prev.luggage, large: Math.max(0, prev.luggage.large - 1) }
+                    }))}
+                  >
+                    <Text style={styles.quantityButtonText}>−</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.quantityText}>{formData.luggage.large}</Text>
+                  <TouchableOpacity
+                    style={styles.quantityButton}
+                    onPress={() => setFormData(prev => ({
+                      ...prev,
+                      luggage: { ...prev.luggage, large: Math.min(10, prev.luggage.large + 1) }
+                    }))}
+                  >
+                    <Text style={styles.quantityButtonText}>+</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
 
             <View style={styles.requirementItem}>
@@ -821,5 +924,57 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: spacing.md,
     lineHeight: typography.fontSize.sm * 1.4,
+  },
+  luggageSection: {
+    marginBottom: spacing.md,
+  },
+  luggageItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray200,
+  },
+  luggageInfo: {
+    flex: 1,
+  },
+  luggageLabel: {
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.medium,
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  luggageDescription: {
+    fontSize: typography.fontSize.sm,
+    color: colors.textSecondary,
+  },
+  quantitySelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.gray100,
+    borderRadius: borderRadius.md,
+    padding: spacing.xs,
+  },
+  quantityButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quantityButtonText: {
+    color: colors.white,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.bold,
+  },
+  quantityText: {
+    paddingHorizontal: spacing.md,
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.medium,
+    color: colors.text,
+    minWidth: 40,
+    textAlign: 'center',
   },
 });

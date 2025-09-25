@@ -1,0 +1,60 @@
+Got it 👍 Thanks for the update. I’ll replace the old domain everywhere in the Terms of Service with the new one: https://www.rideclubnet.com
+Here’s the corrected version of the Terms of Service:
+________________________________________
+Terms of Service
+Last Updated: November 4, 2024
+Welcome to Ride Club (“Company,” “we,” “our,” or “us”), a company registered in Canada under the Canada Business Corporations Act. We operate the website https://www.rideclubnet.com (the “Site”), the mobile application Ride Club (the “App”), and related services (collectively, the “Services”).
+By using our Services, you agree to these Terms of Service (“Terms”). If you do not agree, you must not use the Services.
+________________________________________
+1. Nature of the Service
+Ride Club is a carpooling platform where Drivers and Passengers can connect to arrange shared rides. Ride Club is not a taxi service, transportation provider, insurer, agent, or broker. We do not control or guarantee the actions of Members, and we are not a party to any agreement between Drivers and Passengers.
+All arrangements for rides, including safety, timing, pick-up/drop-off, and cost, are the sole responsibility of the Members involved.
+________________________________________
+2. Eligibility
+•	You must be at least 18 years old and legally able to enter into binding agreements.
+•	You may only register for an account on your own behalf.
+•	By using the Services, you confirm that the information you provide is accurate and up to date.
+________________________________________
+3. Intellectual Property
+All rights to the Site, App, trademarks, logos, content, and software belong to Ride Club or its licensors. We grant you a limited, revocable, non-transferable license to use the Services for personal, non-commercial purposes.
+You may not copy, sell, modify, or distribute our Services or Content without written permission.
+________________________________________
+4. Fees and Payments
+Ride Club may introduce service fees, subscription fees, or other charges. We reserve the right to update or change fees at any time, with or without prior notice. By continuing to use the Services after such changes, you agree to the updated fees.
+All payments are processed by Stripe, our third-party payment processor. Ride Club does not collect or store your payment details. By making a payment, you agree to Stripe’s terms and privacy policy. Ride Club is not responsible for Stripe’s handling of your payment information.
+________________________________________
+5. User Responsibilities
+When using the Services, you agree to:
+•	Drive safely and follow all traffic laws (if you are a Driver).
+•	Treat other Members with respect and avoid harassment or abuse.
+•	Use the Services only for lawful, non-commercial purposes unless authorized by Ride Club.
+•	Avoid posting false, offensive, or harmful content.
+•	Promptly report inappropriate or unsafe behavior to Ride Club.
+You acknowledge that Ride Club does not perform criminal background checks and does not guarantee the conduct of Members. You are solely responsible for your safety and decisions when arranging rides.
+________________________________________
+6. Account Suspension and Termination
+We may suspend or terminate your account at any time, without notice, if you violate these Terms, misuse the Services, or if necessary for security or legal reasons.
+________________________________________
+7. Limitation of Liability
+To the maximum extent permitted by law:
+•	Ride Club is not liable for accidents, injuries, damages, losses, delays, cancellations, disputes, or other issues arising from rides or interactions between Members.
+•	Our total liability to you will not exceed the amount you paid to use the Services in the 12 months before any claim.
+________________________________________
+8. Indemnification
+You agree to defend, indemnify, and hold harmless Ride Club, its employees, directors, and affiliates from any claims, damages, or expenses arising from your use of the Services, your interactions with other Members, or your violation of these Terms.
+________________________________________
+9. Governing Law & Dispute Resolution
+These Terms are governed by the laws of Canada and the Province of Ontario. Any disputes will be resolved exclusively in the courts of Ontario.
+________________________________________
+10. Changes to These Terms
+We may update these Terms at any time. If we make significant changes, we will notify you by email or through the App. Continued use of the Services after changes take effect means you accept the revised Terms.
+________________________________________
+11. Contact Us
+If you have questions about these Terms, please contact us at:
+📧 info@ride-club.co
+📍 Ride Club Inc., 720 Cambrian Heights Dr, Greater Sudbury P3C5L8, Canada
+📞 +1 437-326-5222
+________________________________________
+✨ Now the domain is correctly updated to rideclubnet.com.
+Do you also want me to update the Privacy Policy you shared earlier so it matches this new domain and email address?
+

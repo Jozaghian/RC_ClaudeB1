@@ -606,6 +606,30 @@ export default function SettingsScreen({ navigation }) {
             <Text style={styles.actionArrow}>→</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity
+            style={styles.actionItem}
+            onPress={() => navigation.navigate('Content', {
+              contentKey: 'privacy-policy',
+              title: 'Privacy Policy'
+            })}
+          >
+            <Text style={styles.actionIcon}>🛡️</Text>
+            <Text style={styles.actionText}>Privacy Policy</Text>
+            <Text style={styles.actionArrow}>→</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionItem}
+            onPress={() => navigation.navigate('Content', {
+              contentKey: 'terms-of-service',
+              title: 'Terms of Service'
+            })}
+          >
+            <Text style={styles.actionIcon}>📋</Text>
+            <Text style={styles.actionText}>Terms of Service</Text>
+            <Text style={styles.actionArrow}>→</Text>
+          </TouchableOpacity>
+
         </View>
       </ScrollView>
     </SafeAreaView>
