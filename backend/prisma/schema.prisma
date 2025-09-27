@@ -126,6 +126,10 @@ model User {
   identityVerified  Boolean             @default(false) @map("identity_verified")
   verificationCode  String?             @map("verification_code")
   verificationExpiry DateTime?          @map("verification_expiry")
+
+  // Password reset
+  passwordResetToken String?            @map("password_reset_token")
+  passwordResetExpiry DateTime?         @map("password_reset_expiry")
   
   // Driver specific
   licenseNumber     String?             @map("license_number")
@@ -282,7 +286,7 @@ model Ride {
   // Return trip information
   returnDateTime      DateTime?   @map("return_datetime")
   returnNotes         String?     @map("return_notes")
-  returnRideId        String?     @map("return_ride_id")
+  returnRideId        String?     @unique @map("return_ride_id")
   isReturnTrip        Boolean     @default(false) @map("is_return_trip")
   
   // Legacy recurring support (keep for backward compatibility)

@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
-import { theme } from '../styles/theme';
+import { theme } from '../utils/theme';
 import apiService from '../services/apiService';
+import ContentService from '../services/contentService';
 
 const ContentScreen = ({ route, navigation }) => {
   const { contentKey, title } = route.params;
@@ -25,12 +26,24 @@ const ContentScreen = ({ route, navigation }) => {
   const fetchContent = async () => {
     try {
       setLoading(true);
-      const response = await apiService.get(`/content/${contentKey}`);
 
-      if (response.success) {
-        setContent(response.data);
+      // Try to fetch from API first
+      try {
+        const response = await apiService.get(`/content/${contentKey}`);
+        if (response.success) {
+          setContent(response.data);
+          return;
+        }
+      } catch (apiError) {
+        console.log('API content fetch failed, using local content:', apiError.message);
+      }
+
+      // Fallback to local content
+      const localContent = ContentService.getContent(contentKey);
+      if (localContent.success) {
+        setContent(localContent.data);
       } else {
-        Alert.alert('Error', 'Failed to load content');
+        Alert.alert('Error', 'Content not available');
       }
     } catch (error) {
       console.error('Error fetching content:', error);

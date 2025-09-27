@@ -42,6 +42,7 @@ import HelpScreen from '../screens/HelpScreen';
 import SupportScreen from '../screens/SupportScreen';
 import SafetyReportScreen from '../screens/SafetyReportScreen';
 import BugReportScreen from '../screens/BugReportScreen';
+import ContentScreen from '../screens/ContentScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -341,10 +342,15 @@ function ProfileStack() {
         component={BrowseRequestsScreen}
         options={{ title: 'Browse Requests' }}
       />
-      <Stack.Screen 
-        name="CreateBid" 
+      <Stack.Screen
+        name="CreateBid"
         component={CreateBidScreen}
         options={{ title: 'Place Your Bid' }}
+      />
+      <Stack.Screen
+        name="Content"
+        component={ContentScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

@@ -7,6 +7,7 @@ const { authenticateToken, requireRole } = require('../middleware/auth');
 const { sendSMS } = require('../services/twilioService');
 const { generateVerificationCode, generateToken } = require('../utils/helpers');
 const aiModerationService = require('../services/aiModerationService');
+const { sendWelcomeEmail } = require('../services/sesEmailService');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -75,6 +76,14 @@ router.post('/register', validate(schemas.userRegistration), async (req, res) =>
     } catch (smsError) {
       console.error('SMS sending failed:', smsError);
       // Continue with registration even if SMS fails
+    }
+
+    // Send welcome email
+    try {
+      await sendWelcomeEmail(email, firstName, role);
+    } catch (emailError) {
+      console.error('Welcome email sending failed:', emailError);
+      // Continue with registration even if welcome email fails
     }
 
     // Generate JWT token

@@ -1,9 +1,7 @@
 import axios from 'axios';
 
 // Base API configuration
-const API_BASE_URL = __DEV__ 
-  ? 'http://localhost:3001/api'  // Development - Use localhost  
-  : 'https://rideclubnet.com/api'; // Production
+const API_BASE_URL = 'https://rideclubnet.com/api'; // Production
 
 class ApiService {
   constructor() {

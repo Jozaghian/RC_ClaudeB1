@@ -1,18 +1,21 @@
-const twilio = require('twilio');
+const AWS = require('aws-sdk');
 const nodemailer = require('nodemailer');
 
 class NotificationService {
   constructor() {
-    // Initialize Twilio client (with fallback for missing credentials)
-    if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-      this.twilioClient = twilio(
-        process.env.TWILIO_ACCOUNT_SID,
-        process.env.TWILIO_AUTH_TOKEN
-      );
-      console.log('📱 Twilio SMS service initialized');
+    // Initialize AWS SNS client for SMS
+    if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+      AWS.config.update({
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_SNS_REGION || 'ca-central-1'
+      });
+
+      this.snsClient = new AWS.SNS();
+      console.log('📱 AWS SNS service initialized');
     } else {
-      console.log('⚠️ Twilio credentials not found. SMS features will be disabled.');
-      this.twilioClient = null;
+      console.log('⚠️ AWS credentials not found. SMS features will be disabled.');
+      this.snsClient = null;
     }
     
     // Initialize email transporter (with fallback for missing credentials)
@@ -31,22 +34,33 @@ class NotificationService {
     }
   }
 
-  // Send SMS notification
+  // Send SMS notification using AWS SNS
   async sendSMS(phoneNumber, message) {
     try {
-      if (!this.twilioClient) {
-        console.log('📱 SMS simulation (Twilio not configured):', { phoneNumber, message });
+      if (!this.snsClient) {
+        console.log('📱 SMS simulation (AWS SNS not configured):', { phoneNumber, message });
         return { success: true, messageId: 'sms_simulated_' + Date.now() };
       }
 
-      const result = await this.twilioClient.messages.create({
-        body: message,
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to: phoneNumber
-      });
-      
-      console.log(`SMS sent successfully: ${result.sid}`);
-      return { success: true, messageId: result.sid };
+      const params = {
+        Message: message,
+        PhoneNumber: phoneNumber,
+        MessageAttributes: {
+          'AWS.SNS.SMS.SenderID': {
+            DataType: 'String',
+            StringValue: 'RideClub'
+          },
+          'AWS.SNS.SMS.SMSType': {
+            DataType: 'String',
+            StringValue: 'Transactional'
+          }
+        }
+      };
+
+      const result = await this.snsClient.publish(params).promise();
+
+      console.log(`SMS sent successfully via AWS SNS: ${result.MessageId}`);
+      return { success: true, messageId: result.MessageId };
     } catch (error) {
       console.error('SMS sending failed:', error);
       return { success: false, error: error.message };
