@@ -63,20 +63,20 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use('/auth', require('./routes/auth'));
-app.use('/auth', require('./routes/password-reset')); // Password reset routes
-app.use('/content', require('./routes/content')); // Content management (Privacy Policy, TOS, etc.)
-app.use('/rides', require('./routes/rides'));
-app.use('/requests', require('./routes/requests'));
-app.use('/bookings', require('./routes/bookings'));
-app.use('/messages', require('./routes/messages'));
-app.use('/vehicles', require('./routes/vehicles'));
-app.use('/locations', require('./routes/locations'));
-app.use('/bids', require('./routes/bids'));
-app.use('/ratings', require('./routes/ratings'));
-app.use('/credits', require('./routes/credits'));
-app.use('/payments', require('./routes/payments'));
-app.use('/support', require('./routes/support'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', require('./routes/password-reset')); // Password reset routes
+app.use('/api/content', require('./routes/content')); // Content management (Privacy Policy, TOS, etc.)
+app.use('/api/rides', require('./routes/rides'));
+app.use('/api/requests', require('./routes/requests'));
+app.use('/api/bookings', require('./routes/bookings'));
+app.use('/api/messages', require('./routes/messages'));
+app.use('/api/vehicles', require('./routes/vehicles'));
+app.use('/api/locations', require('./routes/locations'));
+app.use('/api/bids', require('./routes/bids'));
+app.use('/api/ratings', require('./routes/ratings'));
+app.use('/api/credits', require('./routes/credits'));
+app.use('/api/payments', require('./routes/payments'));
+app.use('/api/support', require('./routes/support'));
 
 // 404 handler
 app.use('*', (req, res) => {
